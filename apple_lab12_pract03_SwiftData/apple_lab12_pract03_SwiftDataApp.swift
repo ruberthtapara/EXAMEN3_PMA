@@ -2,7 +2,7 @@
 //  apple_lab12_pract03_SwiftDataApp.swift
 //  apple_lab12_pract03_SwiftData
 //
-//  Created by Jaime Gomez on 1/6/25.
+//  Created by Ruberth Edgardo on 5/11/26.
 //
 
 import SwiftUI
@@ -12,13 +12,22 @@ import SwiftData
 struct apple_lab12_pract03_SwiftDataApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Teacher.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
+            let storeURL = modelConfiguration.url
+            try? FileManager.default.removeItem(at: storeURL)
+            if let newContainer = try? ModelContainer(for: schema, configurations: [modelConfiguration]) {
+                return newContainer
+            }
+            let memoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            if let memoryContainer = try? ModelContainer(for: schema, configurations: [memoryConfig]) {
+                return memoryContainer
+            }
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
